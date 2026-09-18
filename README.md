@@ -1,27 +1,10 @@
-# trainability_effective_dim
+# Implementation of effective dimension measure
 
-QNN-based time-series forecasting with expressivity and trainability analysis
-via global effective dimension (GED), and local effective dimension (LED).
+This repository contains the implementation of both local and global effective dimension measure.
 
 ## How to run
 
-Open `experiment_setup.ipynb` and execute the cells sequentially.
-
-You may skip the Optuna hyperparameter-search cells because they are
-computationally expensive. Effective hyperparameters are already provided to
-`BasicTrainer`.
-
-The main pipeline is:
-
-```text
-data generation
-    → input-output pair creation
-    → optional Optuna hyperparameter search
-    → model training
-    → simple and continuous forecasting
-    → loss visualization
-    → GED / LED analysis
-```
+Open `tds_experiment.ipynb` and execute the cells sequentially.
 
 ## Structure
 
@@ -40,14 +23,10 @@ trainability_effective_dim/
 │   │   └── led.py                    # Local effective dimension
 │   ├── trainers/
 │   │   ├── abstract_trainer.py       # AbstractTrainer base class
-│   │   ├── basic_trainer.py          # Training and forecasting
-│   │   ├── hyperparameter_trainer.py # [WIP] Optuna hyperparameter search
-│   │   └── statistical_trainer.py    # [WIP] Multiple-run statistics
+│   │   └── basic_trainer.py          # Training and forecasting
 │   └── datasets/                     # Preprocessed .pt datasets
-├── references/                       # Background papers on effective dimension
-├── results/                          # Figures and hyperparameter-search results
 ├── tests/                            # CFIM, sampler, Monte Carlo, GED, LED tests
-├── experiment_setup.ipynb            # End-to-end experiment pipeline
+├── tds_experiment.ipynb              # End-to-end experiment pipeline
 └── README.md
 ```
 
@@ -63,26 +42,17 @@ This project depends on utilities elsewhere in `qtsa_expressivity`:
 
 ## Pipeline details
 
-1. **Data preparation** — Mackey-Glass and NARMA10 series are generated with
-   `src.datagen`, split chronologically into train/validation/test chunks,
-   scaled using training-only statistics, converted into sliding-window
-   input-output pairs, and saved as PyTorch `TensorDataset`s.
 
-2. **Model** — `GQNN` in `core/model/models.py` defines a variational quantum
+1. **Model** — `GQNN` in `core/model/models.py` defines a variational quantum
    circuit. Classical inputs are embedded with a configurable feature map
    such as ZZ, IQP, or `AngleEmbedding`, then processed by
    `StronglyEntanglingLayers`.
 
-3. **Training** — `BasicTrainer` runs Adam-based training with optional L1/L2
+2. **Training** — `BasicTrainer` runs Adam-based training with optional L1/L2
    regularization. `HyperparameterTrainer` is intended to run Optuna trials
    with pruning but remains work in progress.
 
-4. **Forecasting** — `BasicTrainer` supports:
-   - `test_simple_forecast`: one-step prediction using ground-truth windows;
-   - `test_continuous_forecast`: autoregressive forecasting, where each
-     prediction becomes part of the next input window.
-
-5. **Effective-dimension analysis** — CFIM, Monte Carlo estimation, GED, and
+3. **Effective-dimension analysis** — CFIM, Monte Carlo estimation, GED, and
    LED can be applied to a model and a representative set of inputs after
    model initialization or training.
 
@@ -97,14 +67,6 @@ Detailed docstrings are available directly in:
 - `core/measures/ged.py` for global effective dimension;
 - `core/measures/led.py` for local effective dimension;
 - `tests/` for documented expected behavior and analytic reference cases.
-
-## Status
-
-- CFIM, empirical Fisher estimation, parameter samplers, GED, LED, and their
-  unit tests are implemented.
-- `core/trainers/statistical_trainer.py` is not yet implemented.
-- `core/trainers/hyperparameter_trainer.py` is not fully implemented.
-- `experiment_setup.ipynb` remains work in progress.
 
 
 ## Effective dimension workflow
