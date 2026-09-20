@@ -3,6 +3,7 @@ from dataclasses import dataclass
 
 import matplotlib.pyplot as plt
 import torch
+from tqdm.auto import tqdm
 
 from projects.trainability_effective_dim.core.measures.ged import estimate_global_effective_dimension
 
@@ -23,7 +24,7 @@ def sweep_ged_by_depth(
     theoretical_dataset_size=1_000,
     n_theta=100,
     repetitions=5,
-    normalize = True,
+    normalize=True,
     seed=0,
     min_probability=1e-12,
 ):
@@ -46,29 +47,41 @@ def sweep_ged_by_depth(
         raise ValueError("depths must not be empty")
 
     samples = {}
+    total_evaluations = len(depths) * repetitions
 
-    for depth in depths:
-        depth_results = []
+    with tqdm(
+        total=total_evaluations,
+        desc="Computing GED sweep",
+        unit="evaluation",
+    ) as progress_bar:
+        for depth in depths:
+            depth_results = []
 
-        for repetition in range(repetitions):
-            torch.manual_seed(seed + 10_000 * depth + repetition)
+            for repetition in range(repetitions):
+                progress_bar.set_postfix(
+                    depth=depth,
+                    repetition=f"{repetition + 1}/{repetitions}",
+                )
 
-            net = model_factory(depth)
+                torch.manual_seed(seed + 10_000 * depth + repetition)
 
-            ged = estimate_global_effective_dimension(
-                net=net,
-                inputs=inputs,
-                normalize=normalize,
-                n_theta=n_theta,
-                min_probability=min_probability,
-                array_of_theoretical_number_of_data_samples=[
-                    theoretical_dataset_size
-                ],
-            )
+                net = model_factory(depth)
 
-            depth_results.append(ged[0])
+                ged = estimate_global_effective_dimension(
+                    net=net,
+                    inputs=inputs,
+                    normalize=normalize,
+                    n_theta=n_theta,
+                    min_probability=min_probability,
+                    array_of_theoretical_number_of_data_samples=[
+                        theoretical_dataset_size
+                    ],
+                )
 
-        samples[depth] = depth_results
+                depth_results.append(ged[0])
+                progress_bar.update(1)
+
+            samples[depth] = depth_results
 
     means = [
         float(torch.tensor(samples[depth], dtype=torch.float64).mean())

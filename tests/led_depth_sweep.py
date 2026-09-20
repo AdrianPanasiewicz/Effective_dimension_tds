@@ -4,6 +4,7 @@ from collections import OrderedDict
 
 import matplotlib.pyplot as plt
 import torch
+from tqdm.auto import tqdm
 
 from projects.trainability_effective_dim.core.measures.led import estimate_local_effective_dimension
 
@@ -48,35 +49,42 @@ def sweep_led_by_depth(
         raise ValueError("depths must not be empty")
 
     samples = {}
+    total_evaluations = len(depths) * repetitions
 
-    for depth in depths:
-        depth_results = []
+    with tqdm(
+        total=total_evaluations,
+        desc="Computing LED sweep",
+        unit="evaluation",
+    ) as progress_bar:
+        for depth in depths:
+            depth_results = []
 
-        for repetition in range(repetitions):
-            torch.manual_seed(seed + 10_000 * depth + repetition)
+            for repetition in range(repetitions):
+                progress_bar.set_postfix(
+                    depth=depth,
+                    repetition=f"{repetition + 1}/{repetitions}",
+                )
 
-            net = model_factory(depth)
+                torch.manual_seed(seed + 10_000 * depth + repetition)
 
-            # epsilon = (
-            #     epsilon
-            #     * math.sqrt(net.parameter_count)
-            # )
+                net = model_factory(depth)
 
-            led = estimate_local_effective_dimension(
-                net=net,
-                inputs=inputs,
-                normalize=normalize,
-                epsilon=epsilon,
-                n_theta=n_theta,
-                min_probability=min_probability,
-                array_of_theoretical_number_of_data_samples=[
-                    theoretical_dataset_size
-                ],
-            )
+                led = estimate_local_effective_dimension(
+                    net=net,
+                    inputs=inputs,
+                    normalize=normalize,
+                    epsilon=epsilon,
+                    n_theta=n_theta,
+                    min_probability=min_probability,
+                    array_of_theoretical_number_of_data_samples=[
+                        theoretical_dataset_size
+                    ],
+                )
 
-            depth_results.append(led[0])
+                depth_results.append(led[0])
+                progress_bar.update(1)
 
-        samples[depth] = depth_results
+            samples[depth] = depth_results
 
     means = [
         float(torch.tensor(samples[depth], dtype=torch.float64).mean())
@@ -163,49 +171,43 @@ def is_non_decreasing_with_tolerance(values, tolerance=0.05):
 
 
 def load_trained_prefix(target_net, trained_net):
-    trained_state = trained_net.state_dict()
-    target_state = target_net.state_dict()
-
-    loaded_state = OrderedDict()
-
-    for name, target_tensor in target_state.items():
-        if name not in trained_state:
-            raise KeyError(
-                f"Parameter or buffer {name!r} is missing from "
-                "the trained model state."
-            )
-
-        source_tensor = trained_state[name].detach().to(
-            device=target_tensor.device,
-            dtype=target_tensor.dtype,
-        )
-
-        if source_tensor.shape == target_tensor.shape:
-            loaded_state[name] = source_tensor.clone()
-            continue
-
-        if (
-            source_tensor.ndim == target_tensor.ndim
-            and all(
-                source_size >= target_size
-                for source_size, target_size in zip(
-                    source_tensor.shape,
-                    target_tensor.shape,
-                )
-            )
-        ):
-            slices = tuple(
-                slice(0, target_size)
-                for target_size in target_tensor.shape
-            )
-            loaded_state[name] = source_tensor[slices].clone()
-            continue
-
+    if target_net.n_qubits != trained_net.n_qubits:
         raise ValueError(
-            f"Cannot transfer {name!r}: trained tensor shape "
-            f"{tuple(source_tensor.shape)} is incompatible with target "
-            f"shape {tuple(target_tensor.shape)}."
+            "Target and trained networks must have the same number of qubits."
         )
 
-    target_net.load_state_dict(loaded_state, strict=True)
+    if target_net.n_layers > trained_net.n_layers:
+        raise ValueError(
+            f"Cannot construct depth-{target_net.n_layers} from a "
+            f"trained depth-{trained_net.n_layers} network."
+        )
+
+    trained_weights = trained_net.qlayers.weights
+    target_weights = target_net.qlayers.weights
+
+    expected_target_shape = target_net.weight_shape
+    expected_trained_shape = trained_net.weight_shape
+
+    if tuple(target_weights.shape) != tuple(expected_target_shape):
+        raise ValueError(
+            f"Unexpected target weight shape: {tuple(target_weights.shape)}. "
+            f"Expected: {tuple(expected_target_shape)}."
+        )
+
+    if tuple(trained_weights.shape) != tuple(expected_trained_shape):
+        raise ValueError(
+            f"Unexpected trained weight shape: {tuple(trained_weights.shape)}. "
+            f"Expected: {tuple(expected_trained_shape)}."
+        )
+
+    prefix_weights = trained_weights[
+        :target_net.n_layers
+    ].detach().to(
+        device=target_weights.device,
+        dtype=target_weights.dtype,
+    )
+
+    with torch.no_grad():
+        target_weights.copy_(prefix_weights)
+
     return target_net
