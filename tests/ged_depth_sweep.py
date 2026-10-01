@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import torch
 from tqdm.auto import tqdm
 
-from projects.trainability_effective_dim.core.measures.ged import estimate_global_effective_dimension
+from core.measures.ged import estimate_global_effective_dimension
 
 
 @dataclass

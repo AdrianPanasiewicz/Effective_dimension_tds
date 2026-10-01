@@ -227,17 +227,54 @@ class HyperparameterTrainer(AbstractTrainer):
         return net, training_metrics
 
     def test_model(
-        self,
-        config: Config,
-        model_class: Any,
-    ) -> None:
-        """Evaluate a model with a future testing implementation.
+            self,
+            config: Config,
+            model_instance: torch.nn.Module,
+    ) -> float:
+        """Return the mean loss on the test dataset.
 
         Args:
-            config: Configuration required for model construction or evaluation.
-            model_class: Callable that builds the QNN PyTorch module.
+            config: Configuration containing the evaluation device.
+            model_instance: Trained QNN PyTorch module.
 
         Returns:
-            None. The testing workflow is not yet implemented.
+            Mean test loss without regularization.
         """
-        pass
+        torch_device = torch.device(config["training_config"]["device"])
+        qlayer = model_instance.qlayers.to(torch_device)
+        qlayer.eval()
+
+        testloader = DataLoader(
+            self.testset,
+            batch_size=1,
+            shuffle=False,
+            num_workers=int(
+                config["training_config"].get("number_of_testing_workers", 0)
+            ),
+            pin_memory=torch_device.type != "cpu",
+        )
+
+        test_loss_sum = 0.0
+        test_steps = 0
+
+        with torch.no_grad():
+            for inputs, targets in testloader:
+                inputs = inputs.to(
+                    device=torch_device,
+                    dtype=qlayer.weights.dtype,
+                ).squeeze(0)
+                targets = targets.to(
+                    device=torch_device,
+                    dtype=qlayer.weights.dtype,
+                ).view(-1)
+
+                outputs = qlayer(inputs).view(-1)
+                loss = self.criterion(outputs, targets)
+
+                test_loss_sum += loss.item()
+                test_steps += 1
+
+        if test_steps == 0:
+            raise ValueError("The test dataset is empty.")
+
+        return test_loss_sum / test_steps

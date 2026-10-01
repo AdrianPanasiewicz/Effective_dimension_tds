@@ -5,7 +5,7 @@ from matplotlib import pyplot as plt
 from dataclasses import dataclass
 from typing import List, Tuple, Union, Callable, Any
 
-from projects.expr_train_theory.qfim.core import StateFunction
+StateFunction = Callable[[np.ndarray], np.ndarray]
 
 
 @dataclass(frozen=True)
