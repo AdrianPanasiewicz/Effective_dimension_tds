@@ -137,8 +137,7 @@ For every computational-basis outcome $z$, the statevector is converted into a
 probability:
 
 $$
-p_\theta(z \mid x)
-=
+p_\theta(z \mid x)=
 \left|
 \langle z \mid \psi_\theta(x)\rangle
 \right|^2.
@@ -147,8 +146,7 @@ $$
 The CFIM is:
 
 $$
-F(\theta, x)
-=
+F(\theta, x)=
 \sum_z
 \frac{
 \nabla_\theta p_\theta(z \mid x)
@@ -229,8 +227,7 @@ For every sampled parameter vector $\theta_k$, the function computes a CFIM
 for each input $x_j$ and averages over inputs:
 
 $$
-F_{\mathrm{emp}}(\theta_k)
-=
+F_{\mathrm{emp}}(\theta_k)=
 \frac{1}{N_x}
 \sum_{j=1}^{N_x}
 F(\theta_k, x_j).
@@ -250,8 +247,7 @@ exception occurs.
 Both LED and GED normalize empirical Fisher matrices as:
 
 $$
-\hat F(\theta_k)
-=
+\hat F(\theta_k)=
 \frac{
 d F_{\mathrm{emp}}(\theta_k)
 }{
@@ -313,8 +309,7 @@ $$
 The effective dimension is estimated as:
 
 $$
-d_{\mathrm{eff}}(n)
-=
+d_{\mathrm{eff}}(n)=
 \frac{2}{\log(\kappa)}
 \log
 \left[
