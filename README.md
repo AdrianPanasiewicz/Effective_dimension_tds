@@ -112,7 +112,7 @@ $$
 For a dataset size $n$, the resolution scale is 
 
 $$
-\kappa = \frac{\gamma n}{2\pi \log n}.
+\kappa_{n,\gamma} = \frac{\gamma n}{2\pi \log n}.
 $$ 
 
 For each parameter sample $\boldsymbol{\theta}_j$, we compute the log-volume contribution:
@@ -142,7 +142,7 @@ estimate_effective_dimension(
 ```
 
 - `parameter_space`: a `UniformParameterSpace` gives GED. An `EpsilonBallParameterSpace` centred at the trained weights gives LED.
-- `sample_sizes`: the values of $n$ to evaluate. They must satisfy $n > 1$ and $\kappa > 1$, and typically start from 100. The default is the number of inputs.
+- `sample_sizes`: the values of $n$ to evaluate. They must satisfy $n > 1$ and $\kappa_{n,\gamma} > 1$, and typically start from 100. The default is the number of inputs.
 - `normalize`: if `True`, the function returns $d_{n,\gamma} / d$.
 
 ## Tests
