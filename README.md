@@ -45,7 +45,7 @@ $$
     p(y \mid \boldsymbol{x}; \boldsymbol{\theta}) = \left|\braket{y \mid {\psi(\boldsymbol{x}, \boldsymbol{\theta})}}\right|^2.
 $$
 
-The classical Fisher information matrix (CFIM) is computed from the gradients of these probabilities with PyTorch autograd:
+The classical Fisher information matrix (CFIM) is computed from the gradients of these probabilities with PyTorch `autograd` by averaging over a representative batch of $\ell$ data samples:
 
 $$
     \tilde{\boldsymbol{F}}_{(i,j)}(\boldsymbol{\theta})
@@ -93,7 +93,7 @@ sample_empirical_fishers(
 )
 ```
 
-For every sampled $\theta_k$, the CFIM is averaged over the inputs:
+For every sampled $\theta_k$, the CFIM is averaged across the input dataset $\{\boldsymbol{x}_j\}$ of size $N_x$:
 
 $$
 \tilde{\boldsymbol{F}}(\boldsymbol{\theta}_i) = \frac{1}{N_x} \sum_{j=1}^{N_x} \boldsymbol{F}(\boldsymbol{\theta}_i, \boldsymbol{x}_j).
@@ -103,13 +103,13 @@ The result has shape `(n_theta, d, d)` and the original model weights are restor
 
 ### Effective dimension
 
-The empirical Fisher matrices are normalized to an average trace of $d$, following Abbas et al.:
+The empirical Fisher matrices are normalized to an average trace of $d$, over $N_{\theta}$ parameter samples, following Abbas et al.:
 
 $$
 \hat{\boldsymbol{F}}(\boldsymbol{\theta}_i) = \frac{k \cdot \tilde{\boldsymbol{F}}(\boldsymbol{\theta}_i)}{\mathrm{Tr}\left(\frac{1}{N_\theta} \sum_{j=1}^{N_\theta} \tilde{\boldsymbol{F}}(\boldsymbol{\theta}_j)\right)}.
 $$
 
-For a dataset size $n$, the resolution scale is 
+For a chosen dataset size $n$, we define the resolution scale factor, with hyperparameter $γ\in (0, 1]$ (typically set to 1):
 
 $$
 \kappa_{n,\gamma} = \frac{\gamma n}{2\pi \log n}.
@@ -121,7 +121,7 @@ $$
 r_j=\frac{1}{2}\log\det\left[ \boldsymbol{I} + \kappa_{n,\gamma} \hat{\boldsymbol{F}}(\boldsymbol{\theta}_j) \right].
 $$
 
-Finally, our Monte Carlo estimate of the effective dimension averages these contributions over all  parameter samples:
+Finally, our Monte Carlo estimate of the effective dimension averages these contributions over all $N_{\theta}$ parameter samples:
 
 $$
     d_{n,\gamma} = \frac{2}{\log(\kappa_{n,\gamma})} \log \left[ \frac{1}{N_\theta} \sum_{j=1}^{N_\theta} \exp(r_j) \right].
