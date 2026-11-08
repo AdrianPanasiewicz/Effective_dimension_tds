@@ -2,9 +2,8 @@
 
 The mathematical formulation of effective dimension as a measure of the learning capacity of quantum neural networks, together with its practical implementation for a time-series forecasting experiment, are explained in the following two-part TDS article series:
 
-Part 1 — Theory: [Why Parameter Count Is Not Model Complexity: An Introduction to Effective Dimension](https://towardsdatascience.com/why-parameter-count-is-not-model-complexity-an-introduction-to-effective-dimension/)
-
-Part 2 — Implementation: [Computing Effective Dimension in Practice: A Guide for Quantum Machine Learning Models](https://towardsdatascience.com/computing-effective-dimension-in-practice-a-guide-for-quantum-machine-learning-models/preview/)
+- **Part 1 — Theory:** [Why Parameter Count Is Not Model Complexity: An Introduction to Effective Dimension](https://towardsdatascience.com/why-parameter-count-is-not-model-complexity-an-introduction-to-effective-dimension/)
+- **Part 2 — Implementation:** [Computing Effective Dimension in Practice: A Guide for Quantum Machine Learning Models](https://towardsdatascience.com/computing-effective-dimension-in-practice-a-guide-for-quantum-machine-learning-models/preview/)
 
 Source code for the two-part article series on effective dimension as a measure of the learning capacity of quantum neural networks (QNNs). The project trains a QNN for Mackey-Glass time-series forecasting and analyses it with the global effective dimension (GED) and the local effective dimension (LED). Part 1 of the series covers the theory. Part 2 covers the implementation in this repository.
 
