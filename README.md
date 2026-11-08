@@ -26,7 +26,6 @@ The Mackey-Glass series is split chronologically into training, validation, and 
 - `tests/`: unit tests for the effective-dimension components.
 - `results/` and `charts/`: figures and experiment results.
 - `tds_experiment.ipynb`: end-to-end experiment pipeline.
-- `extend_depths.ipynb` and `plot_results_v2_3_withx.ipynb`: additional circuit depths and result plotting.
 
 
 ## Effective dimension implementation
