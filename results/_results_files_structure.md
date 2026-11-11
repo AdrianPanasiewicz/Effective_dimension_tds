@@ -1,4 +1,4 @@
-# Structure of the files in ``
+# Structure of the files in `..\results`
 
 This document describes the result files produced by the depth sweep on the Mackey-Glass (tau = 30) dataset and by the extension notebook that adds further depths to existing results. A variational quantum model (`GQNN`, 4 qubits) is trained at each circuit depth. Its local effective dimension (LED), global effective dimension (GED) and test loss are then recorded.
 
