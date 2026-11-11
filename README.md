@@ -13,7 +13,6 @@ This repository contains source code for the two-part article series on effectiv
 ## How to run
 
 Open `tds_experiment.ipynb` and execute the cells sequentially. The hyperparameter-search cells are computationally expensive and may be skipped, because effective hyperparameters are already provided to `BasicTrainer`.
-
 ```text
 data generation
     → input-output pair creation
@@ -29,7 +28,7 @@ The Mackey-Glass series is split chronologically into training, validation, and 
 
 - `core/`: the model (`core/model`), effective-dimension measures (`core/measures`), trainers (`core/trainers`), and datasets (`core/datasets`).
 - `tests/`: unit tests for the effective-dimension components.
-- `results/` and `charts/`: figures and experiment results.
+- `results/` and `charts/`: figures and experiment results. The structure of the files in `results/` and the way they are generated are described in [`results/_results_files_structure.md`](results/_results_files_structure.md).
 - `tds_experiment.ipynb`: end-to-end experiment pipeline.
 
 
