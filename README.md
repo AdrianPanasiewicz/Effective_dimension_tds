@@ -12,7 +12,7 @@ This repository contains source code for the two-part article series on effectiv
 
 ## How to run
 
-Open `tds_experiment.ipynb` and execute the cells sequentially. The hyperparameter-search cells are computationally expensive and may be skipped, because effective hyperparameters are already provided to `BasicTrainer`.
+Open `tds_experiment.ipynb` and execute the cells sequentially. The hyperparameter-search cells are computationally expensive and may be skipped, because effective hyperparameters are already provided to `BasicTrainer`. To visualize saved results without rerunning training, use `plot_aggregate_results.ipynb`. To evaluate additional circuit depths, use `extend_depths.ipynb`. Before running the extension notebook, set `PROJECT_ROOT`, `RESULTS_DIR`, `SEEDS`, and `NEW_DEPTHS` to match your experiment.
 ```text
 data generation
     → input-output pair creation
@@ -31,6 +31,8 @@ The Mackey-Glass series is split chronologically into training, validation, and 
 - `results/` and `charts/`: figures and experiment results.
 - [`results_files_structure.md`](results_files_structure.md): reference for the files in `results/`. It explains what each file contains, which notebook produces it, and how to load it in Python. Read it before aggregating seeds, reusing trained models or adding further circuit depths (the name of the file contains a hyperlink to it).
 - `tds_experiment.ipynb`: end-to-end experiment pipeline.
+- [`plot_aggregate_results.ipynb`](plot_aggregate_results.ipynb): aggregates saved GED, LED, and test-loss results across seeds and generates plots in `charts/`.
+- [`extend_depths.ipynb`](extend_depths.ipynb): extends existing experiments to additional circuit depths, trains missing models, computes GED, LED, and test loss, and merges the new results into the existing files.
 
 
 ## Effective dimension implementation
