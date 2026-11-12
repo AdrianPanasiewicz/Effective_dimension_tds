@@ -28,7 +28,8 @@ The Mackey-Glass series is split chronologically into training, validation, and 
 
 - `core/`: the model (`core/model`), effective-dimension measures (`core/measures`), trainers (`core/trainers`), and datasets (`core/datasets`).
 - `tests/`: unit tests for the effective-dimension components.
-- `results/` and `charts/`: figures and experiment results. The structure of the files in `results/` and the way they are generated are described in [`results/_results_files_structure.md`](results/_results_files_structure.md).
+- `results/` and `charts/`: figures and experiment results.
+- [`results_files_structure.md`](results_files_structure.md): reference for the files in `results/`. It explains what each file contains, which notebook produces it, and how to load it in Python. Read it before aggregating seeds, reusing trained models or adding further circuit depths (the name of the file contains a hyperlink to it).
 - `tds_experiment.ipynb`: end-to-end experiment pipeline.
 
 
